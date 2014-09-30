@@ -19,7 +19,7 @@ package com.badlogic.gdx.utils;
 
 import java.util.Arrays;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.MathUtils;
 
 /** A {@link java.lang.StringBuilder} that implements equals and hashcode.
  * @see CharSequence
@@ -761,22 +761,23 @@ public class StringBuilder implements Appendable, CharSequence {
 			append0('-');
 			value = -value;
 		}
+		final int numChars = numChars(value, 10);
 		if (minLength > 1) {
-			for (int j = minLength - numChars(value, 10); j > 0; --j)
-				append(prefix);
+			for (int j = minLength - numChars; j > 0; --j)
+				append0(prefix);
 		}
-		if (value >= 10000) {
-			if (value >= 1000000000) append0(digits[(int)((long)value % 10000000000L / 1000000000L)]);
-			if (value >= 100000000) append0(digits[value % 1000000000 / 100000000]);
-			if (value >= 10000000) append0(digits[value % 100000000 / 10000000]);
-			if (value >= 1000000) append0(digits[value % 10000000 / 1000000]);
-			if (value >= 100000) append0(digits[value % 1000000 / 100000]);
-			append0(digits[value % 100000 / 10000]);
+		switch(numChars) {
+		case 10: append0(digits[(int)((long)value % 10000000000L / 1000000000L)]);
+		case 9: append0(digits[value % 1000000000 / 100000000]);
+		case 8: append0(digits[value % 100000000 / 10000000]);
+		case 7: append0(digits[value % 10000000 / 1000000]);
+		case 6: append0(digits[value % 1000000 / 100000]);
+		case 5: append0(digits[value % 100000 / 10000]);
+		case 4: append0(digits[value % 10000 / 1000]);
+		case 3: append0(digits[value % 1000 / 100]);
+		case 2: append0(digits[value % 100 / 10]);
+		case 1: append0(digits[value % 10]);
 		}
-		if (value >= 1000) append0(digits[value % 10000 / 1000]);
-		if (value >= 100) append0(digits[value % 1000 / 100]);
-		if (value >= 10) append0(digits[value % 100 / 10]);
-		append0(digits[value % 10]);
 		return this;
 	}
 
@@ -815,10 +816,10 @@ public class StringBuilder implements Appendable, CharSequence {
 			append0('-');
 			value = -value;
 		}
-		int numChars = numChars(value, 10);
+		final int numChars = numChars(value, 10);
 		if (minLength > 1) {
 			for (int j = minLength - numChars; j > 0; --j)
-				append(prefix);
+				append0(prefix);
 		}
 		switch(numChars) {
 		case 19: append0(digits[(int)(value % 10000000000000000000D / 1000000000000000000L)]);
@@ -842,20 +843,6 @@ public class StringBuilder implements Appendable, CharSequence {
 		case 1: append0(digits[(int)(value % 10L)]);
 		}
 		return this;
-	}
-	
-	public static void main(String[] args){
-		StringBuilder sb = new StringBuilder();
-		long l = Long.MAX_VALUE - 99999;
-		while (true){
-			sb.setLength(0);
-			sb.append(++l);
-			String s = sb.toString();
-			if (l % 1000000L == 0){
-				System.out.println(s);
-			}
-			assert (String.valueOf(l).equals(s));
-		}
 	}
 
 	/** Appends the string representation of the specified {@code float} value. The {@code float} value is converted to a string
