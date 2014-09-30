@@ -19,6 +19,8 @@ package com.badlogic.gdx.utils;
 
 import java.util.Arrays;
 
+import com.badlogic.gdx.Gdx;
+
 /** A {@link java.lang.StringBuilder} that implements equals and hashcode.
  * @see CharSequence
  * @see Appendable
@@ -813,32 +815,47 @@ public class StringBuilder implements Appendable, CharSequence {
 			append0('-');
 			value = -value;
 		}
+		int numChars = numChars(value, 10);
 		if (minLength > 1) {
-			for (int j = minLength - numChars(value, 10); j > 0; --j)
+			for (int j = minLength - numChars; j > 0; --j)
 				append(prefix);
 		}
-		if (value >= 10000) {
-			if (value >= 1000000000000000000L) append0(digits[(int)(value % 10000000000000000000D / 1000000000000000000L)]);
-			if (value >= 100000000000000000L) append0(digits[(int)(value % 1000000000000000000L / 100000000000000000L)]);
-			if (value >= 10000000000000000L) append0(digits[(int)(value % 100000000000000000L / 10000000000000000L)]);
-			if (value >= 1000000000000000L) append0(digits[(int)(value % 10000000000000000L / 1000000000000000L)]);
-			if (value >= 100000000000000L) append0(digits[(int)(value % 1000000000000000L / 100000000000000L)]);
-			if (value >= 10000000000000L) append0(digits[(int)(value % 100000000000000L / 10000000000000L)]);
-			if (value >= 1000000000000L) append0(digits[(int)(value % 10000000000000L / 1000000000000L)]);
-			if (value >= 100000000000L) append0(digits[(int)(value % 1000000000000L / 100000000000L)]);
-			if (value >= 10000000000L) append0(digits[(int)(value % 100000000000L / 10000000000L)]);
-			if (value >= 1000000000L) append0(digits[(int)(value % 10000000000L / 1000000000L)]);
-			if (value >= 100000000L) append0(digits[(int)(value % 1000000000L / 100000000L)]);
-			if (value >= 10000000L) append0(digits[(int)(value % 100000000L / 10000000L)]);
-			if (value >= 1000000L) append0(digits[(int)(value % 10000000L / 1000000L)]);
-			if (value >= 100000L) append0(digits[(int)(value % 1000000L / 100000L)]);
-			append0(digits[(int)(value % 100000L / 10000L)]);
+		switch(numChars) {
+		case 19: append0(digits[(int)(value % 10000000000000000000D / 1000000000000000000L)]);
+		case 18: append0(digits[(int)(value % 1000000000000000000L / 100000000000000000L)]);
+		case 17: append0(digits[(int)(value % 100000000000000000L / 10000000000000000L)]);
+		case 16: append0(digits[(int)(value % 10000000000000000L / 1000000000000000L)]);
+		case 15: append0(digits[(int)(value % 1000000000000000L / 100000000000000L)]);
+		case 14: append0(digits[(int)(value % 100000000000000L / 10000000000000L)]);
+		case 13: append0(digits[(int)(value % 10000000000000L / 1000000000000L)]);
+		case 12: append0(digits[(int)(value % 1000000000000L / 100000000000L)]);
+		case 11: append0(digits[(int)(value % 100000000000L / 10000000000L)]);
+		case 10: append0(digits[(int)(value % 10000000000L / 1000000000L)]);
+		case 9: append0(digits[(int)(value % 1000000000L / 100000000L)]);
+		case 8: append0(digits[(int)(value % 100000000L / 10000000L)]);
+		case 7: append0(digits[(int)(value % 10000000L / 1000000L)]);
+		case 6: append0(digits[(int)(value % 1000000L / 100000L)]);
+		case 5: append0(digits[(int)(value % 100000L / 10000L)]);
+		case 4: append0(digits[(int)(value % 10000L / 1000L)]);
+		case 3: append0(digits[(int)(value % 1000L / 100L)]);
+		case 2: append0(digits[(int)(value % 100L / 10L)]);
+		case 1: append0(digits[(int)(value % 10L)]);
 		}
-		if (value >= 1000L) append0(digits[(int)(value % 10000L / 1000L)]);
-		if (value >= 100L) append0(digits[(int)(value % 1000L / 100L)]);
-		if (value >= 10L) append0(digits[(int)(value % 100L / 10L)]);
-		append0(digits[(int)(value % 10L)]);
 		return this;
+	}
+	
+	public static void main(String[] args){
+		StringBuilder sb = new StringBuilder();
+		long l = Long.MAX_VALUE - 99999;
+		while (true){
+			sb.setLength(0);
+			sb.append(++l);
+			String s = sb.toString();
+			if (l % 1000000L == 0){
+				System.out.println(s);
+			}
+			assert (String.valueOf(l).equals(s));
+		}
 	}
 
 	/** Appends the string representation of the specified {@code float} value. The {@code float} value is converted to a string
@@ -1197,4 +1214,6 @@ public class StringBuilder implements Appendable, CharSequence {
 			if (chars[i] != chars2[i]) return false;
 		return true;
 	}
+	
+	
 }
